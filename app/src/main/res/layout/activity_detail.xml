@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_margin="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context="com.lexoid.popularmovies.ui.DetailActivity">
+
+        <TextView
+            android:id="@+id/title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            tools:text="Title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/poster_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title_tv"
+            tools:src="@tools:sample/avatars"
+            android:contentDescription="@string/movie_poster"/>
+
+        <TextView
+            android:id="@+id/description_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/release_title"
+            tools:text="@tools:sample/lorem/random" />
+
+        <TextView
+            android:id="@+id/release_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/release_title"
+            app:layout_constraintStart_toEndOf="@+id/release_title"
+            app:layout_constraintTop_toTopOf="@+id/release_title"
+            tools:text="@sample/tools:date/ddmmyy" />
+
+        <TextView
+            android:id="@+id/release_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/release_date"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/rating_title"
+            app:layout_constraintTop_toBottomOf="@+id/rating_title" />
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            style="@android:style/Widget.DeviceDefault.Light.RatingBar.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:isIndicator="true"
+            android:numStars="10"
+            app:layout_constraintBottom_toBottomOf="@+id/rating_title"
+            app:layout_constraintStart_toEndOf="@+id/rating_title"
+            app:layout_constraintTop_toTopOf="@+id/rating_title" />
+
+        <TextView
+            android:id="@+id/rating_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/rating"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/poster_iv" />
+
+        <TextView
+            android:id="@+id/rating_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/ratingBar"
+            app:layout_constraintStart_toEndOf="@+id/ratingBar"
+            app:layout_constraintTop_toTopOf="@+id/ratingBar"
+            tools:text="7.25" />
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

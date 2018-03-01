@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+
+    <string name="movie_poster">Movie poster</string>
+    <string name="error_message">Connection error. Please, try again</string>
+    <string name="release_date">Release date:</string>
+    <string name="rating">Rating:</string>
+    <string name="sort_by_popular">Most popular</string>
+    <string name="sort_by_rating">By rating</string>
+    <string name="refresh">Refresh</string>
+</resources>

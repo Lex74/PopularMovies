@@ -15,8 +15,11 @@ import android.widget.Toast;
 import com.lexoid.popularmovies.R;
 import com.lexoid.popularmovies.data.MoviesRepository;
 import com.lexoid.popularmovies.data.models.Movie;
+import com.lexoid.popularmovies.data.models.Review;
+import com.lexoid.popularmovies.data.models.Video;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.lexoid.popularmovies.ui.DetailActivity.MOVIE_KEY;
 
@@ -44,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        moviesRepository = new MoviesRepository(this);
+        moviesRepository = MoviesRepository.getInstance(this);
 
         recyclerView = findViewById(R.id.movies_recycler);
         progressBar = findViewById(R.id.progressBar);
@@ -91,6 +94,16 @@ public class MainActivity extends AppCompatActivity implements
     public void onGetMovies(ArrayList<Movie> moviesList) {
         this.moviesList = moviesList;
         showMoviesList();
+    }
+
+    @Override
+    public void onGetVideos(List<Video> videos) {
+
+    }
+
+    @Override
+    public void onGetReviews(List<Review> reviews) {
+
     }
 
     private void showMoviesList() {

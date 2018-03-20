@@ -8,4 +8,7 @@
     <string name="sort_by_popular">Most popular</string>
     <string name="sort_by_rating">By rating</string>
     <string name="refresh">Refresh</string>
+    <string name="video_thumbnail">Video thumbnail</string>
+    <string name="videos">Videos:</string>
+    <string name="reviews">Reviews:</string>
 </resources>

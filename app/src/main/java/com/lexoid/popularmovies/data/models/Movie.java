@@ -32,6 +32,10 @@ public class Movie implements Parcelable{
         releaseDate = in.readString();
     }
 
+    public int getId() {
+        return id;
+    }
+
     public String getOriginalTitle() {
         return originalTitle;
     }

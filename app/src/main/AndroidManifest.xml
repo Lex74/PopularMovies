@@ -23,6 +23,10 @@
         <activity android:name=".ui.DetailActivity"
             android:parentActivityName=".ui.MainActivity">
         </activity>
+        <provider
+            android:authorities="com.lexoid.popularmovies"
+            android:name=".data.FavoritesContentProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

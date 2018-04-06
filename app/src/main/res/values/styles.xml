@@ -3,13 +3,18 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimaryDark">@color/black</item>
     </style>
 
     <style name="DetailTitle">
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ToggleStar">
+        <item name="android:background">@drawable/favorite_star</item>
+        <item name="android:textOn">""</item>
+        <item name="android:textOff">""</item>
     </style>
 
 </resources>

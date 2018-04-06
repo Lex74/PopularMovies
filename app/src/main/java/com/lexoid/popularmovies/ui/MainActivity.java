@@ -1,6 +1,10 @@
 package com.lexoid.popularmovies.ui;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.os.Build;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -8,11 +12,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.lexoid.popularmovies.R;
+import com.lexoid.popularmovies.data.FavoritesContract;
 import com.lexoid.popularmovies.data.MoviesRepository;
 import com.lexoid.popularmovies.data.models.Movie;
 import com.lexoid.popularmovies.data.models.Review;
@@ -31,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final int SORT_TYPE_POPULAR = 0;
     private static final int SORT_TYPE_RATED = 1;
+    private static final int SORT_TYPE_FAVORITES = 2;
     private static final String SORT_TYPE_KEY = "sort_type";
 
     private int sortType = SORT_TYPE_POPULAR;
@@ -56,9 +65,11 @@ public class MainActivity extends AppCompatActivity implements
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadMoviesFromNet();
+                loadMovies();
             }
         });
+
+        sortSpinnerInit();
 
         if (savedInstanceState != null){
             sortType = savedInstanceState.getInt(SORT_TYPE_KEY);
@@ -66,28 +77,94 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private void sortSpinnerInit(){
+        Spinner sortSpinner = findViewById(R.id.sort_spinner);
+
+        String[] sortByArray = getResources().getStringArray(R.array.sort_by_array);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, sortByArray);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        sortSpinner.setAdapter(adapter);
+
+        sortSpinner.setSelection(sortType);
+
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                setSortType(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
         if (moviesList == null)
-            loadMoviesFromNet();
+            loadMovies();
     }
 
-    private void loadMoviesFromNet(){
-        if (sortType == SORT_TYPE_POPULAR) {
-            moviesRepository.getPopularMovies();
-        } else {
-            moviesRepository.getTopRatedMovies();
-        }
+    private void loadMovies(){
         progressBar.setVisibility(View.VISIBLE);
         refreshButton.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
+
+        switch (sortType){
+            case SORT_TYPE_POPULAR:
+                moviesRepository.getPopularMovies();
+                break;
+            case SORT_TYPE_RATED:
+                moviesRepository.getTopRatedMovies();
+                break;
+            case SORT_TYPE_FAVORITES:
+                getFavoriteMovies();
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown sort type");
+        }
     }
 
     private void loadMoviesFromSavedState(Bundle bundle){
         moviesList = bundle.getParcelableArrayList(MOVIES_LIST_KEY);
 
         showMoviesList();
+    }
+
+    private void getFavoriteMovies(){
+        Cursor cursor = getContentResolver().query(FavoritesContract.MovieEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+
+        ArrayList<Movie> movies = new ArrayList<>();
+
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                do {
+                    int id = cursor.getInt(cursor.getColumnIndex(FavoritesContract.MovieEntry.MOVIE_ID_COLUMN));
+                    String title = cursor.getString(cursor.getColumnIndex(FavoritesContract.MovieEntry.ORIGINAL_TITLE));
+                    String posterPath = cursor.getString(cursor.getColumnIndex(FavoritesContract.MovieEntry.POSTER_PATH));
+                    String overview = cursor.getString(cursor.getColumnIndex(FavoritesContract.MovieEntry.OVERVIEW));
+                    float voteAverage = cursor.getFloat(cursor.getColumnIndex(FavoritesContract.MovieEntry.VOTE_AVERAGE));
+                    String releaseDate = cursor.getString(cursor.getColumnIndex(FavoritesContract.MovieEntry.RELEASE_DATE));
+
+                    Movie movie = new Movie(id, title, posterPath, overview, voteAverage, releaseDate);
+
+                    movies.add(movie);
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
+        }
+
+        onGetMovies(movies);
     }
 
     @Override
@@ -132,17 +209,27 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onPosterClick(Movie movie) {
+    public void onPosterClick(Movie movie, View sharedElement) {
         Bundle extraData = new Bundle();
         extraData.putParcelable(MOVIE_KEY, movie);
 
-        startDetailActivity(extraData);
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+                sharedElement,
+                ViewCompat.getTransitionName(sharedElement));
+
+        startDetailActivity(extraData, options.toBundle());
     }
 
-    private void startDetailActivity(Bundle extraData){
+    private void startDetailActivity(Bundle extraData, Bundle options){
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtras(extraData);
-        startActivity(intent);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            startActivity(intent, options);
+        } else {
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -161,26 +248,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_sort){
-            switchSortType(item);
-            return true;
-        }
         return false;
     }
 
-    private void switchSortType(MenuItem item){
-        if (sortType == SORT_TYPE_POPULAR){
-            sortType = SORT_TYPE_RATED;
+    private void setSortType(int sortType){
+        this.sortType = sortType;
 
-            item.setIcon(R.drawable.ic_action_star);
-            item.setTitle(R.string.sort_by_rating);
-        } else {
-            sortType = SORT_TYPE_POPULAR;
-
-            item.setIcon(R.drawable.ic_action_people);
-            item.setTitle(R.string.sort_by_popular);
-        }
-
-        loadMoviesFromNet();
+        loadMovies();
     }
 }

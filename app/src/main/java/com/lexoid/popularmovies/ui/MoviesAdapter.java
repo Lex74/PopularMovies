@@ -1,5 +1,7 @@
 package com.lexoid.popularmovies.ui;
 
+import android.os.Build;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,13 +57,17 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
             posterIv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onPosterClickListener.onPosterClick(moviesList.get(getAdapterPosition()));
+                    onPosterClickListener.onPosterClick(moviesList.get(getAdapterPosition()), posterIv);
                 }
             });
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                posterIv.setTransitionName(posterIv.getResources().getString(R.string.transition_poster_name));
+            }
         }
     }
 
     public interface OnPosterClickListener{
-        void onPosterClick(Movie movie);
+        void onPosterClick(Movie movie, View sharedElement);
     }
 }

@@ -23,6 +23,15 @@ public class Movie implements Parcelable{
     @SerializedName("release_date")
     private String releaseDate;
 
+    public Movie(int id, String originalTitle, String posterPath, String overview, float voteAverage, String releaseDate) {
+        this.id = id;
+        this.originalTitle = originalTitle;
+        this.posterPath = posterPath;
+        this.overview = overview;
+        this.voteAverage = voteAverage;
+        this.releaseDate = releaseDate;
+    }
+
     protected Movie(Parcel in) {
         id = in.readInt();
         originalTitle = in.readString();

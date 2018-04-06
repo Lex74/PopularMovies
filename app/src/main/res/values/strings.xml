@@ -11,4 +11,13 @@
     <string name="video_thumbnail">Video thumbnail</string>
     <string name="videos">Videos:</string>
     <string name="reviews">Reviews:</string>
+    <string name="favorites_button_desc">Add to favorites button</string>
+    <string name="sort_by">Sort by</string>
+    <string name="transition_poster_name">Poster</string>
+
+    <string-array name="sort_by_array">
+        <item>popular</item>
+        <item>top rated</item>
+        <item>favorites</item>
+    </string-array>
 </resources>

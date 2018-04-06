@@ -1,15 +1,22 @@
 package com.lexoid.popularmovies.ui;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.lexoid.popularmovies.R;
+import com.lexoid.popularmovies.data.FavoritesContract;
 import com.lexoid.popularmovies.data.MoviesRepository;
 import com.lexoid.popularmovies.data.models.Movie;
 import com.lexoid.popularmovies.data.models.Review;
@@ -48,6 +55,7 @@ public class DetailActivity extends AppCompatActivity implements
             TextView releaseTv = findViewById(R.id.release_tv);
             RatingBar ratingBar = findViewById(R.id.ratingBar);
             TextView ratingTv = findViewById(R.id.rating_tv);
+            final ToggleButton favoriteTb = findViewById(R.id.favorite_tb);
 
             titleTv.setText(movie.getOriginalTitle());
             descriptionTv.setText(movie.getOverview());
@@ -58,14 +66,57 @@ public class DetailActivity extends AppCompatActivity implements
                     .load(MoviesUtils.getFullImagePath(movie.getPosterPath()))
                     .into(posterIv);
 
+            favoriteTb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    checkMovieAsFavorite(favoriteTb.isChecked());
+                }
+            });
+
             videoRv = findViewById(R.id.videos_rv);
             reviewRv = findViewById(R.id.reviews_rv);
 
             moviesRepository.getVideos(movie.getId());
             moviesRepository.getReviews(movie.getId());
+
+            favoriteTb.setChecked(movieIsFavorite());
+
         } else {
             finish();
         }
+    }
+
+    private void checkMovieAsFavorite(boolean check){
+        if (check){
+
+            ContentValues values = new ContentValues();
+            values.put(FavoritesContract.MovieEntry.MOVIE_ID_COLUMN, movie.getId());
+            values.put(FavoritesContract.MovieEntry.ORIGINAL_TITLE, movie.getOriginalTitle());
+            values.put(FavoritesContract.MovieEntry.POSTER_PATH, movie.getPosterPath());
+            values.put(FavoritesContract.MovieEntry.OVERVIEW, movie.getOverview());
+            values.put(FavoritesContract.MovieEntry.VOTE_AVERAGE, movie.getVoteAverage());
+            values.put(FavoritesContract.MovieEntry.RELEASE_DATE, movie.getReleaseDate());
+
+            Uri uriResult = getContentResolver().insert(FavoritesContract.MovieEntry.CONTENT_URI, values);
+        } else {
+            Uri deleteUri = FavoritesContract.MovieEntry.CONTENT_URI;
+            String where = FavoritesContract.MovieEntry.MOVIE_ID_COLUMN + "=?";
+            String[] whereArgs = {Integer.toString(movie.getId())};
+            int deletedRows = getContentResolver().delete(deleteUri, where, whereArgs);
+        }
+    }
+
+    private boolean movieIsFavorite(){
+        String where = FavoritesContract.MovieEntry.MOVIE_ID_COLUMN + "=?";
+        String[] whereArgs = {Integer.toString(movie.getId())};
+        Cursor cursor = getContentResolver().query(FavoritesContract.MovieEntry.CONTENT_URI,
+                null,
+                where,
+                whereArgs,
+                null);
+        boolean result = cursor != null && cursor.getCount() > 0;
+        if (cursor != null) cursor.close();
+        return result;
     }
 
     @Override

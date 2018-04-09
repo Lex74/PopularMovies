@@ -30,7 +30,8 @@ public class FavoriteDbHelper extends SQLiteOpenHelper {
                 POSTER_PATH  + " TEXT, " +
                 OVERVIEW  + " TEXT, " +
                 VOTE_AVERAGE  + " REAL, " +
-                RELEASE_DATE  + " TEXT" +
+                RELEASE_DATE  + " TEXT, " +
+                " UNIQUE (" + MOVIE_ID_COLUMN +") ON CONFLICT REPLACE" +
                 " );";
 
         db.execSQL(SQL_CREATE_FAVORITES_TABLE);

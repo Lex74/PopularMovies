@@ -30,7 +30,6 @@ public class MoviesRepository {
     private TopRatedMoviesEndpoint topRatedMoviesEndpoint;
     private VideosEndpoint videosEndpoint;
     private ReviewsEndpoint reviewsEndpoint;
-    private MoviesResultListener moviesResultListener;
     private Retrofit retrofit;
 
     private MoviesRepository(){
@@ -51,12 +50,11 @@ public class MoviesRepository {
         reviewsEndpoint = retrofit.create(ReviewsEndpoint.class);
     }
 
-    public static MoviesRepository getInstance(MoviesResultListener moviesResultListener){
-        INSTANCE.moviesResultListener = moviesResultListener;
+    public static MoviesRepository getInstance(){
         return INSTANCE;
     }
 
-    public void getPopularMovies(){
+    public void getPopularMovies(final MoviesResultListener moviesResultListener){
         popularMoviesEndpoint.getPopularMovies(apiKey).enqueue(new Callback<Movie.MoviesList>() {
             @Override
             public void onResponse(Call<Movie.MoviesList> call, Response<Movie.MoviesList> response) {
@@ -70,7 +68,7 @@ public class MoviesRepository {
         });
     }
 
-    public void getTopRatedMovies() {
+    public void getTopRatedMovies(final MoviesResultListener moviesResultListener) {
         topRatedMoviesEndpoint.getTopRatedMovies(apiKey).enqueue(new Callback<Movie.MoviesList>() {
             @Override
             public void onResponse(Call<Movie.MoviesList> call, Response<Movie.MoviesList> response) {
@@ -84,7 +82,7 @@ public class MoviesRepository {
         });
     }
 
-    public void getVideos(int movieId){
+    public void getVideos(int movieId, final MoviesResultListener moviesResultListener){
         videosEndpoint.getVideos(movieId, apiKey).enqueue(new Callback<Video.VideoList>() {
             @Override
             public void onResponse(Call<Video.VideoList> call, Response<Video.VideoList> response) {
@@ -98,7 +96,7 @@ public class MoviesRepository {
         });
     }
 
-    public void getReviews(int movieId){
+    public void getReviews(int movieId, final MoviesResultListener moviesResultListener){
         reviewsEndpoint.getReviews(movieId, apiKey).enqueue(new Callback<Review.ReviewList>() {
             @Override
             public void onResponse(Call<Review.ReviewList> call, Response<Review.ReviewList> response) {

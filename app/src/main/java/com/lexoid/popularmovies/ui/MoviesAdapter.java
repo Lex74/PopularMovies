@@ -52,6 +52,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
             final String fullImagePath = MoviesUtils.getFullImagePath(imagePath);
             Picasso.with(posterIv.getContext())
                     .load(fullImagePath)
+                    .placeholder(R.drawable.ic_image)
+                    .error(R.drawable.ic_broken_image)
                     .into(posterIv);
 
             posterIv.setOnClickListener(new View.OnClickListener() {

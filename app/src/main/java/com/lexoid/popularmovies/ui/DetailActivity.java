@@ -8,9 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -31,12 +31,14 @@ public class DetailActivity extends AppCompatActivity implements
         MoviesRepository.MoviesResultListener,
         VideoAdapter.VideoClickListener{
     public static final String MOVIE_KEY = "movie";
+    public static final String SCROLL_Y = "scrollBarPosition";
 
     private Movie movie;
 
-    private MoviesRepository moviesRepository = MoviesRepository.getInstance(this);
+    private MoviesRepository moviesRepository = MoviesRepository.getInstance();
     private RecyclerView videoRv;
     private RecyclerView reviewRv;
+    private ScrollView scrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class DetailActivity extends AppCompatActivity implements
 
             setTitle(movie.getOriginalTitle());
 
+            scrollView = findViewById(R.id.scrollView2);
             TextView titleTv = findViewById(R.id.title_tv);
             ImageView posterIv = findViewById(R.id.poster_iv);
             TextView descriptionTv = findViewById(R.id.description_tv);
@@ -76,13 +79,31 @@ public class DetailActivity extends AppCompatActivity implements
             videoRv = findViewById(R.id.videos_rv);
             reviewRv = findViewById(R.id.reviews_rv);
 
-            moviesRepository.getVideos(movie.getId());
-            moviesRepository.getReviews(movie.getId());
+            moviesRepository.getVideos(movie.getId(), this);
+            moviesRepository.getReviews(movie.getId(), this);
 
             favoriteTb.setChecked(movieIsFavorite());
 
         } else {
             finish();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        int scrollY = scrollView.getScrollY();
+        outState.putInt(SCROLL_Y, scrollY);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (scrollView != null && savedInstanceState != null){
+            int scrollY = savedInstanceState.getInt(SCROLL_Y);
+            scrollView.scrollTo(0, scrollY);
         }
     }
 
@@ -149,6 +170,10 @@ public class DetailActivity extends AppCompatActivity implements
         Uri uri = Uri.parse(videoUrl);
 
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, R.string.no_video_intent, Toast.LENGTH_LONG).show();
+        }
     }
 }

@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        moviesRepository = MoviesRepository.getInstance(this);
+        moviesRepository = MoviesRepository.getInstance();
 
         recyclerView = findViewById(R.id.movies_recycler);
         progressBar = findViewById(R.id.progressBar);
@@ -92,7 +92,10 @@ public class MainActivity extends AppCompatActivity implements
         sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                setSortType(position);
+                if (sortType != position) {
+                    sortType = position;
+                    loadMovies();
+                }
             }
 
             @Override
@@ -116,10 +119,10 @@ public class MainActivity extends AppCompatActivity implements
 
         switch (sortType){
             case SORT_TYPE_POPULAR:
-                moviesRepository.getPopularMovies();
+                moviesRepository.getPopularMovies(this);
                 break;
             case SORT_TYPE_RATED:
-                moviesRepository.getTopRatedMovies();
+                moviesRepository.getTopRatedMovies(this);
                 break;
             case SORT_TYPE_FAVORITES:
                 getFavoriteMovies();
@@ -249,11 +252,5 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return false;
-    }
-
-    private void setSortType(int sortType){
-        this.sortType = sortType;
-
-        loadMovies();
     }
 }
